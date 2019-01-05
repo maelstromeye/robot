@@ -11,7 +11,7 @@ public class Tracer extends Thread
     private static BufferedImage track;
     private Detector left, right, trace;
     private Engine engl, engr;
-    public static final int width=100, ocular=40, telescope=40, length=0, xstart=190, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
+    public static final int width=100, ocular=40, telescope=40, length=0, xstart=790, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
     public static final double dt=0.022, p=1, i=0.01, d=0.000001;
     private double angle;
     Tracer(View view, BufferedImage image)
