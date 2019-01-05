@@ -110,7 +110,23 @@ public class Tracer extends Thread
 
     }
 
-
+    class Cell
+    {
+        private Point engl, engr, left, right, trace;
+        Cell(Point t, Point el, Point er, Point dl, Point dr)
+        {
+            trace=t;
+            engl=el;
+            engr=er;
+            left=dl;
+            right=dr;
+        }
+        public Point getengl(){return engl;}
+        public Point getengr(){return engr;}
+        public Point getleft(){return left;}
+        public Point getright(){return right;}
+        public Point gettrace(){return trace;}
+    }
 class View extends JPanel
 {
     private Vector<Cell> list;
