@@ -11,7 +11,7 @@ public class Tracer extends Thread
     private static BufferedImage track;
     private Detector left, right, trace;
     private Engine engl, engr;
-    public static final int width=60, ocular=40, telescope=70, length=30, xstart=190, ystart=550, detrad=8, tracerad=2, base=5, radius=4;
+    public static final int width=60, ocular=40, telescope=40, length=0, xstart=190, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
     public static final double dt=0.022, p=1, i=0.01, d=0.000001;
     private double angle;
     Tracer(View view, BufferedImage image)
@@ -22,8 +22,8 @@ public class Tracer extends Thread
         left=new Detector(new Point(xstart-ocular/2,  ystart-telescope), detrad);
         right=new Detector(new Point(xstart+ocular/2, ystart-telescope), detrad);
         trace=new Detector(new Point(xstart, ystart), tracerad);
-        engl=new Engine(new Point(xstart-width/2, ystart-length), base);
-        engr=new Engine(new Point(xstart+width/2, ystart-length), base);
+        engl=new Engine(new Point(xstart-width/2, ystart), base);
+        engr=new Engine(new Point(xstart+width/2, ystart), base);
         angle=3.14/2*3;
     }
     public static void main(String args[])
@@ -50,10 +50,10 @@ public class Tracer extends Thread
         {
             angle+=((double)engl.getangvel()-(double)engr.getangvel())*radius/width*dt;
             trace.setcrd(trace.getx()+Math.cos(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius,trace.gety()+Math.sin(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius);
-            left.setcrd(trace.getx()+Math.cos(angle-0.278299659)*72.8, trace.gety()+Math.sin(angle-0.278299659)*72.8);
-            right.setcrd(trace.getx()+Math.cos(angle+0.278299659)*72.8, trace.gety()+Math.sin(angle+0.278299659)*72.8);
-            engl.setcrd(trace.getx()+Math.cos(angle-0.78539816339)*56.5685424949, trace.gety()+Math.sin(angle-0.78539816339)*56.5685424949);
-            engr.setcrd(trace.getx()+Math.cos(angle+0.78539816339)*56.5685424949, trace.gety()+Math.sin(angle+0.78539816339)*56.5685424949);
+            left.setcrd(trace.getx()+Math.cos(angle-0.4812)*44.72, trace.gety()+Math.sin(angle-0.4812)*44.72);
+            right.setcrd(trace.getx()+Math.cos(angle+0.4812)*44.72, trace.gety()+Math.sin(angle+0.4812)*44.72);
+            engl.setcrd(trace.getx()+Math.cos(angle-1.5708)*width/2, trace.gety()+Math.sin(angle-1.5708)*width/2);
+            engr.setcrd(trace.getx()+Math.cos(angle+1.5708)*width/2, trace.gety()+Math.sin(angle+1.5708)*width/2);
             error=(right.detect()-left.detect());
             derivative=(error-lasterror)/dt;
             integral+=error*dt;
