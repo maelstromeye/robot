@@ -11,7 +11,21 @@ public class Tracer extends Thread
     private static BufferedImage track;
     private Detector left, right, trace;
     private Engine engl, engr;
-    public static final int width=100, ocular=40, telescope=40, length=0, xstart=790, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
+    public static final boolean delivery=false;
+    public static final int width=100, ocular=40, telescope=40, length=0, xstart, ystart, detrad=8, tracerad=2, base=5, radius=4;
+    static
+    {
+        if(delivery)
+        {
+            xstart=290;
+            ystart=800;
+        }
+        else
+        {
+            xstart=1330;
+            ystart=500;
+        }
+    }
     public static final double dt=0.022, p=1, i=0.01, d=0.000001;
     private double angle;
     Tracer(View view, BufferedImage image)
@@ -79,11 +93,9 @@ public class Tracer extends Thread
     {
         private Point crd;
         private int angvel;
-        private double direction;
         Engine(Point point, int i)
         {
             crd=point;
-            direction=90;
             angvel=i;
         }
         public double getx(){return crd.getX();}
