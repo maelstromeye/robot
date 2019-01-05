@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
+import java.util.*;
 public class Tracer extends Thread
 {
     private View view;
@@ -95,7 +95,7 @@ public class Tracer extends Thread
             engl.setangvel((int) (base-steer));
             engr.setangvel((int)(base+steer));
             lasterror=error;
-            view.load(trace.getcrd(), engl.getcrd(), engr.getcrd(), left.getcrd(), right.getcrd());
+            view.load(new Cell(trace.getcrd(), engl.getcrd(), engr.getcrd(), left.getcrd(), right.getcrd()), 0);
             System.out.println(error);
             view.repaint();
             try {
@@ -103,8 +103,6 @@ public class Tracer extends Thread
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
     private class Engine
@@ -178,10 +176,27 @@ public class Tracer extends Thread
         public void setcrd(double x, double y){crd.setLocation(x,y);}
     }
 }
+class Cell
+{
+    private Point engl, engr, left, right, trace;
+    Cell(Point t, Point el, Point er, Point dl, Point dr)
+    {
+        trace=t;
+        engl=el;
+        engr=er;
+        left=dl;
+        right=dr;
+    }
+    public Point getengl(){return engl;}
+    public Point getengr(){return engr;}
+    public Point getleft(){return left;}
+    public Point getright(){return right;}
+    public Point gettrace(){return trace;}
+}
 class View extends JPanel
 {
+    private Vector<Cell> list;
     private Image track;
-    private Point left, right, trace, engl, engr;
     View(Image image)
     {
         track=image;
@@ -194,19 +209,11 @@ class View extends JPanel
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setFocusable(true);
-        left=new Point(Tracer.xstart-Tracer.ocular/2,  Tracer.ystart-Tracer.telescope);
-        right=new Point(Tracer.xstart+Tracer.ocular/2, Tracer.ystart-Tracer.telescope);
-        trace=new Point(Tracer.xstart, Tracer.ystart);
-        engl=new Point(Tracer.xstart-Tracer.width/2, Tracer.ystart);
-        engr=new Point(Tracer.xstart+Tracer.width, Tracer.ystart);
+        list=new Vector<>();
     }
-    public void load(Point t, Point el, Point er, Point dl, Point dr)
+    public void load(Cell c, int i)
     {
-        trace.setLocation(t);
-        left.setLocation(dl);
-        right.setLocation(dr);
-        engl.setLocation(el);
-        engr.setLocation(er);
+        list.add(i, c);
     }
     public void paint(Graphics g)
     {
@@ -214,12 +221,16 @@ class View extends JPanel
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.drawImage(track, 0, 0, this);
-        g.setColor(Color.RED);
-        g.fillOval((int) left.getX()-Tracer.detrad, (int) left.getY()-Tracer.detrad, Tracer.detrad*2, Tracer.detrad*2);
-        g.fillOval((int) right.getX()-Tracer.detrad, (int) right.getY()-Tracer.detrad, Tracer.detrad*2, Tracer.detrad*2);
-        g.fillOval((int) trace.getX()-Tracer.tracerad, (int) trace.getY()-Tracer.tracerad, Tracer.tracerad*2, Tracer.tracerad*2);
-        g.setColor(Color.GRAY);
-        g.fillOval((int) engl.getX()-10, (int) engl.getY()-10, 20, 20);
-        g.fillOval((int) engr.getX()-10, (int) engr.getY()-10, 20, 20);
+        for (Cell c : list)
+        {
+            g.setColor(Color.RED);
+            g.fillOval((int) c.getleft().getX() - Tracer.detrad, (int) c.getleft().getY() - Tracer.detrad, Tracer.detrad * 2, Tracer.detrad * 2);
+            g.fillOval((int) c.getright().getX() - Tracer.detrad, (int) c.getright().getY() - Tracer.detrad, Tracer.detrad * 2, Tracer.detrad * 2);
+            g.fillOval((int) c.gettrace().getX() - Tracer.tracerad, (int) c.gettrace().getY() - Tracer.tracerad, Tracer.tracerad * 2, Tracer.tracerad * 2);
+            g.setColor(Color.GRAY);
+            g.fillOval((int) c.getengl().getX() - 10, (int) c.getengl().getY() - 10, 20, 20);
+            g.fillOval((int) c.getengr().getX() - 10, (int) c.getengr().getY() - 10, 20, 20);
+
+        }
     }
 }
