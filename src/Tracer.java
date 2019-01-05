@@ -147,7 +147,8 @@ class View extends JPanel
     }
     public void load(Cell c, int i)
     {
-        list.add(i, c);
+        if(i>=list.size()) list.add(c);
+        else list.set(i,c);
     }
     public void paint(Graphics g)
     {
