@@ -11,10 +11,12 @@ public class Tracer extends Thread
     private static BufferedImage track;
     private Detector left, right, trace;
     private Engine engl, engr;
-    public static final boolean delivery=false;
-    public static final int width=100, ocular=40, telescope=40, length=0, xstart, ystart, detrad=8, tracerad=2, base=5, radius=4;
+    public static final boolean delivery;
+    public static final int width, ocular, telescope, xstart, ystart, detrad, tracerad, base, radius, steerlimit;
+    public static final double dt, p, i, d;
     static
     {
+        delivery=false;
         if(delivery)
         {
             xstart=290;
@@ -23,10 +25,21 @@ public class Tracer extends Thread
         else
         {
             xstart=1330;
-            ystart=500;
+            ystart=600;
         }
+        width=100;
+        ocular=40;
+        telescope=40;
+        detrad=8;
+        tracerad=2;
+        base=5;
+        radius=4;
+        steerlimit=base*4;
+        dt=0.022;
+        p=20;
+        i=4;
+        d=3.5;
     }
-    public static final double dt=0.022, p=1, i=0.01, d=0.000001;
     private double angle;
     Tracer(View view, BufferedImage image)
     {
@@ -74,11 +87,16 @@ public class Tracer extends Thread
             derivative=(error-lasterror)/dt;
             integral+=error*dt;
             steer=error*p+derivative*d+integral*i;
+            if(Math.abs(steer)>steerlimit)
+            {
+                if(steer>0) steer=steerlimit;
+                else steer=-steerlimit;
+            }
             engl.setangvel((int) (base-steer));
             engr.setangvel((int)(base+steer));
             lasterror=error;
             view.load(trace.getcrd(), engl.getcrd(), engr.getcrd(), left.getcrd(), right.getcrd());
-            System.out.println(trace.detect());
+            System.out.println(error);
             view.repaint();
             try {
                 sleep(20);
@@ -179,8 +197,8 @@ class View extends JPanel
         left=new Point(Tracer.xstart-Tracer.ocular/2,  Tracer.ystart-Tracer.telescope);
         right=new Point(Tracer.xstart+Tracer.ocular/2, Tracer.ystart-Tracer.telescope);
         trace=new Point(Tracer.xstart, Tracer.ystart);
-        engl=new Point(Tracer.xstart-Tracer.width/2, Tracer.ystart-Tracer.length);
-        engr=new Point(Tracer.xstart+Tracer.width, Tracer.ystart-Tracer.length);
+        engl=new Point(Tracer.xstart-Tracer.width/2, Tracer.ystart);
+        engr=new Point(Tracer.xstart+Tracer.width, Tracer.ystart);
     }
     public void load(Point t, Point el, Point er, Point dl, Point dr)
     {
