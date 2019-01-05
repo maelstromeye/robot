@@ -8,22 +8,26 @@ import java.io.IOException;
 public class Tracer extends Thread
 {
     private View view;
-    private static BufferedImage track;
-    private Detector left, right, trace;
-    private Engine engl, engr;
+    public static BufferedImage track;
+
+    //private Detector left, right, trace;
+    //private Engine engl, engr;
     public static final int width=100, ocular=40, telescope=40, length=0, xstart=790, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
     public static final double dt=0.022, p=1, i=0.01, d=0.000001;
     private double angle;
+
+
+
     Tracer(View view, BufferedImage image)
     {
         this.view=view;
         this.view.repaint();
         track=image;
-        left=new Detector(new Point(xstart-ocular/2,  ystart-telescope), detrad);
-        right=new Detector(new Point(xstart+ocular/2, ystart-telescope), detrad);
-        trace=new Detector(new Point(xstart, ystart), tracerad);
-        engl=new Engine(new Point(xstart-width/2, ystart), base);
-        engr=new Engine(new Point(xstart+width/2, ystart), base);
+       // left=new Detector(new Point(xstart-ocular/2,  ystart-telescope), detrad);
+       // right=new Detector(new Point(xstart+ocular/2, ystart-telescope), detrad);
+       // trace=new Detector(new Point(xstart, ystart), tracerad);
+        //engl=new Engine(new Point(xstart-width/2, ystart), base);
+        //engr=new Engine(new Point(xstart+width/2, ystart), base);
         angle=3.14/2*3;
     }
     public static void main(String args[])
@@ -45,109 +49,68 @@ public class Tracer extends Thread
     }
     public void run()
     {
-        double error, steer, lasterror=0, integral=0, derivative, skew, bias;
-        skew=Math.acos((telescope/Math.sqrt(((double)ocular/2)*((double)ocular/2)+((double)telescope)*((double)telescope))));
-        bias=Math.sqrt(((double)ocular/2)*((double)ocular/2)+((double)telescope)*((double)telescope));
-        while(true)
-        {
-            angle+=((double)engl.getangvel()-(double)engr.getangvel())*radius/width*dt;
-            trace.setcrd(trace.getx()+Math.cos(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius,trace.gety()+Math.sin(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius);
-            left.setcrd(trace.getx()+Math.cos(angle-skew)*bias, trace.gety()+Math.sin(angle-skew)*bias);
-            right.setcrd(trace.getx()+Math.cos(angle+skew)*bias, trace.gety()+Math.sin(angle+skew)*bias);
-            engl.setcrd(trace.getx()+Math.cos(angle-1.5708)*width/2, trace.gety()+Math.sin(angle-1.5708)*width/2);
-            engr.setcrd(trace.getx()+Math.cos(angle+1.5708)*width/2, trace.gety()+Math.sin(angle+1.5708)*width/2);
-            error=(right.detect()-left.detect());
-            derivative=(error-lasterror)/dt;
-            integral+=error*dt;
-            steer=error*p+derivative*d+integral*i;
-            engl.setangvel((int) (base-steer));
-            engr.setangvel((int)(base+steer));
-            lasterror=error;
-            view.load(trace.getcrd(), engl.getcrd(), engr.getcrd(), left.getcrd(), right.getcrd());
-            System.out.println(trace.detect());
-            view.repaint();
-            try {
-                sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-    }
-    private class Engine
-    {
-        private Point crd;
-        private int angvel;
-        private double direction;
-        Engine(Point point, int i)
-        {
-            crd=point;
-            direction=90;
-            angvel=i;
-        }
-        public double getx(){return crd.getX();}
-        public double gety(){return crd.getY();}
-        public Point getcrd() {return crd;}
-        public void setcrd(double x, double y){crd.setLocation(x,y);}
-        public int getangvel(){return angvel;}
-        public void setangvel(int i){angvel=i;}
-    }
-    private static class Detector
-    {
-        private Point crd;
-        private int radius;
-        Detector(Point point, int i)
-        {
-            crd=point;
-            radius=i;
-        }
-        public double detect()
-        {
-            Color color;
-            int count=0;
-            double r=0,g=0,b=0;
-            for (int x = (int)crd.getX()-radius; x < (int)crd.getX()+radius; x++)
-            {
-                for (int y = (int)crd.getY()-radius; y < (int)crd.getY()+radius; y++)
-                {
-                    if ((x - crd.getX())*(x - crd.getX()) + (y - crd.getY())*(y - crd.getY())<= radius*radius)
-                    {
-                        color=new Color(track.getRGB(x,y));
-                        r+=color.getRed();
-                        g+=color.getGreen();
-                        b+=color.getBlue();
-                        count++;
-                    }
-                }
-            }
-//            for (int i = (int)crd.getY()-radius; i < (int)crd.getY()+radius; i++)
-//            {
-//                for (int j = (int)crd.getX(); (j-(int)crd.getX())*(j-(int)crd.getX()) + (i-(int)crd.getY())*(i-(int)crd.getY()) <= radius*radius; j--)
-//                {
-//                    color=new Color(track.getRGB(i,j));
-//                    r+=color.getRed();
-//                    g+=color.getGreen();
-//                    b+=color.getBlue();
-//                    count++;
-//                }
-//                for (int j = (int)crd.getX()+1; (j-(int)crd.getX())*(j-(int)crd.getX()) + (i-(int)crd.getY())*(i-(int)crd.getY()) <= radius*radius; j++)
-//                {
-//                    color=new Color(track.getRGB(i,j));
-//                    r+=color.getRed();
-//                    g+=color.getGreen();
-//                    b+=color.getBlue();
-//                    count++;
-//                }
+//        double error, steer, lasterror=0, integral=0, derivative, skew, bias;
+//        skew=Math.acos((telescope/Math.sqrt(((double)ocular/2)*((double)ocular/2)+((double)telescope)*((double)telescope))));
+//        bias=Math.sqrt(((double)ocular/2)*((double)ocular/2)+((double)telescope)*((double)telescope));
+//        while(true)
+//        {
+//            angle+=((double)engl.getangvel()-(double)engr.getangvel())*radius/width*dt;
+//            trace.setcrd(trace.getx()+Math.cos(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius,trace.gety()+Math.sin(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius);
+//            left.setcrd(trace.getx()+Math.cos(angle-skew)*bias, trace.gety()+Math.sin(angle-skew)*bias);
+//            right.setcrd(trace.getx()+Math.cos(angle+skew)*bias, trace.gety()+Math.sin(angle+skew)*bias);
+//            engl.setcrd(trace.getx()+Math.cos(angle-1.5708)*width/2, trace.gety()+Math.sin(angle-1.5708)*width/2);
+//            engr.setcrd(trace.getx()+Math.cos(angle+1.5708)*width/2, trace.gety()+Math.sin(angle+1.5708)*width/2);
+//            error=(right.detect()-left.detect());
+//            derivative=(error-lasterror)/dt;
+//            integral+=error*dt;
+//            steer=error*p+derivative*d+integral*i;
+//            engl.setangvel((int) (base-steer));
+//            engr.setangvel((int)(base+steer));
+//            lasterror=error;
+//            view.load(trace.getcrd(), engl.getcrd(), engr.getcrd(), left.getcrd(), right.getcrd());
+//            System.out.println(trace.detect());
+//            view.repaint();
+//            try {
+//                sleep(20);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
 //            }
-            return (r/count+g/count+b/count)/765*100+(((Math.random()*10)<=1)?(Math.random()*10):0);
-        }
-        public double getx(){return crd.getX();}
-        public double gety(){return crd.getY();}
-        public Point getcrd() {return crd;}
-        public void setcrd(double x, double y){crd.setLocation(x,y);}
+//
+//
+//        }
     }
-}
+    private class TestLoop implements Runnable{
+        Robot robot;
+        private boolean running = false;
+        public TestLoop(Robot robot){
+            this.robot = robot;
+            running = true;
+        }
+        @Override
+        public void run(){
+
+            double angle = Math.PI *3.0/2.0;
+            while(running){
+                robot.steer();
+                angle+= ((double)robot.getLeftEngine().getangvel() - (double)robot.getRightEngine().getangvel())*radius/width*dt;
+               //ustawienie koordynatow srodka
+                robot.getTrace().setcrd(robot.getTrace().getx()+Math.cos(angle)*(robot.getLeftEngine().getangvel()+robot.getRightEngine().getangvel())*dt*3.14*radius,robot.getTrace().gety()+Math.sin(angle)*(robot.getLeftEngine().getangvel()+robot.getRightEngine().getangvel())*dt*3.14*radius);
+                robot.getLeftDetector().setcrd(robot.getTrace().getx()+Math.cos(angle-robot.getSkew())*robot.getBias(), robot.getTrace().gety()+Math.sin(angle-robot.getSkew())*robot.getBias());
+                robot.getRightDetector().setcrd(robot.getTrace().getx()+Math.cos(angle+robot.getSkew())*robot.getBias(), robot.getTrace().gety()+Math.sin(angle+robot.getSkew())*robot.getBias());
+                robot.getLeftEngine().setcrd(robot.getTrace().getx()+Math.cos(angle-1.5708)*width/2, robot.getTrace().gety()+Math.sin(angle-1.5708)*width/2);
+                robot.getRightEngine().setcrd(robot.getTrace().getx()+Math.cos(angle+1.5708)*width/2, robot.getTrace().gety()+Math.sin(angle+1.5708)*width/2);
+                try {
+                    sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+    }
+
+
 class View extends JPanel
 {
     private Image track;
