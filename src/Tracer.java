@@ -11,7 +11,7 @@ public class Tracer extends Thread
     private static BufferedImage track;
     private Detector left, right, trace;
     private Engine engl, engr;
-    public static final int width=60, ocular=40, telescope=40, length=0, xstart=190, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
+    public static final int width=100, ocular=40, telescope=40, length=0, xstart=190, ystart=520, detrad=8, tracerad=2, base=5, radius=4;
     public static final double dt=0.022, p=1, i=0.01, d=0.000001;
     private double angle;
     Tracer(View view, BufferedImage image)
@@ -45,13 +45,15 @@ public class Tracer extends Thread
     }
     public void run()
     {
-        double error, steer, lasterror=0, integral=0, derivative;
+        double error, steer, lasterror=0, integral=0, derivative, skew, bias;
+        skew=Math.acos((telescope/Math.sqrt(((double)ocular/2)*((double)ocular/2)+((double)telescope)*((double)telescope))));
+        bias=Math.sqrt(((double)ocular/2)*((double)ocular/2)+((double)telescope)*((double)telescope));
         while(true)
         {
             angle+=((double)engl.getangvel()-(double)engr.getangvel())*radius/width*dt;
             trace.setcrd(trace.getx()+Math.cos(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius,trace.gety()+Math.sin(angle)*(engl.getangvel()+engr.getangvel())*dt*3.14*radius);
-            left.setcrd(trace.getx()+Math.cos(angle-0.4812)*44.72, trace.gety()+Math.sin(angle-0.4812)*44.72);
-            right.setcrd(trace.getx()+Math.cos(angle+0.4812)*44.72, trace.gety()+Math.sin(angle+0.4812)*44.72);
+            left.setcrd(trace.getx()+Math.cos(angle-skew)*bias, trace.gety()+Math.sin(angle-skew)*bias);
+            right.setcrd(trace.getx()+Math.cos(angle+skew)*bias, trace.gety()+Math.sin(angle+skew)*bias);
             engl.setcrd(trace.getx()+Math.cos(angle-1.5708)*width/2, trace.gety()+Math.sin(angle-1.5708)*width/2);
             engr.setcrd(trace.getx()+Math.cos(angle+1.5708)*width/2, trace.gety()+Math.sin(angle+1.5708)*width/2);
             error=(right.detect()-left.detect());
