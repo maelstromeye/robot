@@ -1,3 +1,4 @@
+
 import java.awt.*;
 
 public class Robot {
@@ -7,6 +8,29 @@ public class Robot {
     private Engine leftEngine, rightEngine;
 
     private double integral,derivative,lastError;
+
+    private double accumulatedTrace = 0, maxTrace=0;
+    private Point lastgood = new Point(Tracer.xstart, Tracer.ystart);
+    private boolean isDead = false;
+
+    private boolean  best = false;
+
+    public double getAngle() {
+        return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
+    }
+
+    private double angle =Math.PI * 3.0 / 2.0;
+
+    public double getFitness() {
+        return fitness;
+    }
+
+
+    private double fitness = 0;
 
     public Detector getLeftDetector() {
         return leftDetector;
@@ -56,43 +80,86 @@ public class Robot {
     public Detector getTrace() {
         return trace;
     }
+    public void calculateFitness(){
+        fitness =  maxTrace/accumulatedTrace;
+    }
+    public void isBest(){
+        best = true;
+    }
 
     public void setTrace(Detector trace) {
         this.trace = trace;
     }
 
-    public Robot(RobotBrain brain){
-                myBrain = brain;
-                trace = new Detector(new Point(Tracer.xstart, Tracer.ystart), Tracer.tracerad);
-                leftDetector=new Detector(new Point(Tracer.xstart-Tracer.ocular/2,  Tracer.ystart-Tracer.telescope), Tracer.detrad);
-                rightDetector=new Detector(new Point(Tracer.xstart+Tracer.ocular/2, Tracer.ystart-Tracer.telescope), Tracer.detrad);
-                leftEngine=new Engine(new Point(Tracer.xstart-Tracer.width/2, Tracer.ystart), Tracer.base);
-                rightEngine=new Engine(new Point(Tracer.xstart+Tracer.width/2, Tracer.ystart), Tracer.base);
+    public Robot giveBaby(){
+        return new Robot(this.myBrain);
+    }
+    public boolean isFinished()
+    {
+        if(isDead){
+            return true;
+        }
+        int max=100;
+        if(Math.hypot(trace.getcrd().getY()-lastgood.getY(), trace.getx()-lastgood.getX())>=max) return true;
+        return false;
+    }
 
-                integral = 0;
-                derivative = 0;
-                lastError = 0;
-            }
+    public boolean isDead() {
+        return isDead;
+    }
+
+    public void setDead(boolean dead) {
+        isDead = dead;
+    }
+
+    public Robot(RobotBrain brain){
+        myBrain = brain;
+        trace = new Detector(new Point(Tracer.xstart, Tracer.ystart), Tracer.tracerad);
+        leftDetector=new Detector(new Point(Tracer.xstart-Tracer.ocular/2,  Tracer.ystart-Tracer.telescope), Tracer.detrad);
+        rightDetector=new Detector(new Point(Tracer.xstart+Tracer.ocular/2, Tracer.ystart-Tracer.telescope), Tracer.detrad);
+        leftEngine=new Engine(new Point(Tracer.xstart-Tracer.width/2, Tracer.ystart), Tracer.base);
+        rightEngine=new Engine(new Point(Tracer.xstart+Tracer.width/2, Tracer.ystart), Tracer.base);
+
+        integral = 0;
+        derivative = 0;
+        lastError = 0;
+    }
 
     public void steer() {
-                double error = rightDetector.detect() - leftDetector.detect();
-                integral+=error*Tracer.dt;
-                derivative=(error-lastError)/Tracer.dt;
-                steering = myBrain.getKd()*error + myBrain.getKi()*integral + myBrain.getKd()*derivative;
+        if(leftDetector.getcrd().getY()+Tracer.detrad>2000 || leftDetector.getcrd().getY()-Tracer.detrad<0 || leftDetector.getcrd().getX()+Tracer.detrad>2000||leftDetector.getcrd().getX()-Tracer.detrad<0 ||
+                rightDetector.getcrd().getY()+Tracer.detrad>2000 || rightDetector.getcrd().getY()-Tracer.detrad<0 || rightDetector.getcrd().getX()+Tracer.detrad>2000||rightDetector.getcrd().getX()-Tracer.detrad<0){
+            isDead = true;
+            return;
+
+        }
 
 
-                if(Math.abs(steering)>Tracer.base*4){
-                    if (steering>0){
-                        steering = Tracer.base*4;
-                    }else{
-                        steering = -Tracer.base*4;
-                    }
-                }
+        double error = rightDetector.detect() - leftDetector.detect();
+        integral+=error*Tracer.dt;
+        derivative=(error-lastError)/Tracer.dt;
+        steering = myBrain.getKp()*error + myBrain.getKi()*integral + myBrain.getKd()*derivative;
 
-                lastError = error;
 
-                leftEngine.setangvel((int)(Tracer.base-steering));
-                rightEngine.setangvel((int)(Tracer.base+steering));
+        if(Math.abs(steering)>Tracer.base*4){
+            if (steering>0){
+                steering = Tracer.base*4;
+            }else{
+                steering = -Tracer.base*4;
+            }
+        }
+
+        lastError = error;
+
+        leftEngine.setangvel((int)(Tracer.base-steering));
+        rightEngine.setangvel((int)(Tracer.base+steering));
+
+        accumulatedTrace+=trace.detect();
+        maxTrace+=100;
+        if(trace.detect()==0.0) {
+            lastgood = new Point(trace.getcrd());
+        }
+
+
     }
 
 
@@ -126,6 +193,7 @@ class Detector
     }
     public double detect()
     {
+
         Color color;
         int count=0;
         double r=0,g=0,b=0;

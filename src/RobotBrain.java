@@ -1,6 +1,6 @@
 public class RobotBrain {
     private double Kp,Ki,Kd;
-
+    private final double mutationRate=0.2;
     public double getKp() {
         return Kp;
     }
@@ -25,9 +25,28 @@ public class RobotBrain {
         Kd = kd;
     }
 
-    public RobotBrain(double Kp, double Ki, double Kd){
-        this.Kd =Kd;
-        this.Ki = Ki;
-        this.Kp = Kp;
+    public RobotBrain(){
+
+        Kp = Math.random() * 10;
+        Kd = Math.random() * 5;
+        Ki = Math.random() * 2;
+
+        //randomowe Kp, Ki, Kd
+    }
+    public void mutate(){
+        double random = Math.random();
+        if(random<mutationRate){
+            Kp = Math.random()*10;
+
+        }
+        random = Math.random();
+//        if(random<mutationRate){
+//            Kd = Math.random()*5;
+//        }
+//        random = Math.random();
+//        if(random<mutationRate){
+//            Ki = Math.random()*2;
+//        }
+
     }
 }
