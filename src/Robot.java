@@ -12,11 +12,16 @@ public class Robot {
     private double accumulatedTrace = 0, maxTrace=0;
     private Point lastgood = new Point(Tracer.xstart, Tracer.ystart);
     private boolean isDead = false;
+    private double time = 0;
+    private double accFitness = 0 ;
 
     private double max_U;
 
     private boolean  best = false;
 
+    public void addTime(double time){
+        this.time+=time;
+    }
     public double getAngle() {
         return angle;
     }
@@ -83,7 +88,7 @@ public class Robot {
         return trace;
     }
     public void calculateFitness(){
-        fitness =  maxTrace/accumulatedTrace;
+        fitness =  time;
     }
     public void isBest(){
         best = true;
@@ -142,11 +147,11 @@ public class Robot {
         steering = myBrain.getKp()*error + myBrain.getKi()*integral + myBrain.getKd()*derivative;
 
 
-        if(Math.abs(steering)>Tracer.base*3){
+        if(Math.abs(steering)>Tracer.base*6){
             if (steering>0){
-                steering = Tracer.base*4;
+                steering = Tracer.base*6;
             }else{
-                steering = -Tracer.base*4;
+                steering = -Tracer.base*6;
             }
         }
 

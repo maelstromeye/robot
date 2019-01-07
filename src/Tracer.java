@@ -57,7 +57,7 @@ public class Tracer extends Thread
                 view.repaint();
             }
             try{
-                Thread.sleep(0);
+                Thread.sleep(15);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
@@ -126,13 +126,27 @@ public class Tracer extends Thread
             tempRobot = population.get(bestRobot).giveBaby();
             newRobots.add(0,tempRobot);
             tempRobot.isBest(); //najlepszy na inny kolor or sth
+            Robot parent1,parent2,child;
             for(int i=0;i<size;i++){
-                tempRobot = selectParent();
-                tempRobot = tempRobot.giveBaby();
-                newRobots.add(i,tempRobot);
+                parent1 = selectParent();
+                parent2 = selectParent();
+                child = crossover(parent1,parent2);
+
+
+
+//                tempRobot = selectParent();
+//                tempRobot = tempRobot.giveBaby();
+//                newRobots.add(i,tempRobot);
             }
             generation++;
             population = newRobots;
+        }
+        private Robot crossover(Robot parent1, Robot parent2){
+            Robot child;
+
+
+
+            return child;
         }
         public void mutateBabies(){
             for(Robot r : population){
@@ -168,7 +182,7 @@ public class Tracer extends Thread
                 robot.getRightDetector().setcrd(robot.getTrace().getx() + Math.cos(angle + robot.getSkew()) * robot.getBias(), robot.getTrace().gety() + Math.sin(angle + robot.getSkew()) * robot.getBias());
                 robot.getLeftEngine().setcrd(robot.getTrace().getx() + Math.cos(angle - 1.5708) * width / 2, robot.getTrace().gety() + Math.sin(angle - 1.5708) * width / 2);
                 robot.getRightEngine().setcrd(robot.getTrace().getx() + Math.cos(angle + 1.5708) * width / 2, robot.getTrace().gety() + Math.sin(angle + 1.5708) * width / 2);
-
+                robot.addTime(dt);
                 view.load(new Cell(robot.getTrace().getcrd(), robot.getLeftEngine().getcrd(), robot.getRightEngine().getcrd(), robot.getLeftDetector().getcrd(), robot.getRightDetector().getcrd()), i);
 
 
