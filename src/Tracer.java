@@ -10,7 +10,7 @@ public class Tracer extends Thread
     private View view;
     public static BufferedImage track;
 
-    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart =1150, ystart = 600, detrad = 8, tracerad = 2, radius = 30;
+    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart =750, ystart = 600, detrad = 8, tracerad = 2, radius = 30;
 
     public static final double dt = 0.022, p = 100, i = 0, d = 0 , base = 5.0/6.0;
 
@@ -31,7 +31,7 @@ public class Tracer extends Thread
         Tracer tracer;
         BufferedImage image;
         try {
-            image = ImageIO.read(new File("resources/track2.png"));
+            image = ImageIO.read(new File("resources/track.png"));
         } catch (IOException e) {
             e.printStackTrace();
             return;
@@ -44,20 +44,27 @@ public class Tracer extends Thread
     public void run()
     {
         running = true;
-        population = new Population(100);
+        population = new Population(50);
+        double time = System.currentTimeMillis();
         while(running){
-            if(population.isFinished()){
+
+            if(population.isFinished() || (System.currentTimeMillis()-time)>15000){
                 System.out.println("genetic");
-                //algorytm genetyczny
                 population.calculateFitness();
+                //algorytm genetyczny
+                for(int i=0;i<population.size;i++){
+                    System.out.println(population.population.get(i).getFitness());
+                }
+
                 population.naturalSelection();
                 population.mutateBabies();
+                time = System.currentTimeMillis();
             }else{
                 population.move();
                 view.repaint();
             }
             try{
-                Thread.sleep(10);
+                Thread.sleep(1);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
@@ -106,7 +113,6 @@ public class Tracer extends Thread
             double random = Math.random() * allFitness;
             double runningSum =0;
             Robot robot;
-            System.out.println(population.size());
             for(int i=0;i<size;i++){
                 runningSum += population.get(i).getFitness();
                 if(runningSum > random){

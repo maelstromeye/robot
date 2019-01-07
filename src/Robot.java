@@ -9,7 +9,7 @@ public class Robot {
 
     private double integral,derivative,lastError;
 
-    private double accumulatedTrace = 0, maxTrace=0;
+    private long accumulatedTrace = 0, maxTrace=0;
     private Point lastgood = new Point(Tracer.xstart, Tracer.ystart);
     private boolean isDead = false;
 
@@ -36,7 +36,7 @@ public class Robot {
     }
 
 
-    private double fitness = 0;
+    private long fitness = 0;
 
     public Detector getLeftDetector() {
         return leftDetector;
@@ -87,7 +87,7 @@ public class Robot {
         return trace;
     }
     public void calculateFitness(){
-        fitness =  maxTrace/accumulatedTrace;
+        fitness =  (long)accumulatedTrace*accumulatedTrace;
     }
     public void isBest(){
         best = true;
