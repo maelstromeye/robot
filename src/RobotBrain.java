@@ -43,8 +43,38 @@ public class RobotBrain {
 
     }
 
+    private RobotBrain(int[] digits){
+        setPid(digits);
+    }
 
 
+    public static RobotBrain[] crossover(RobotBrain b1, RobotBrain b2){
+        double a =0.5;
+        double random;
+        double parentBias = Math.random();
+        int[] digits1 = new int[12];
+        int[] digits2 = new int[12];
+        int[] p1 = b1.getDigits();
+        int[] p2 = b2.getDigits();
+
+        int x,y;
+
+        for(int i=0;i<12;i++){
+            random = Math.random();
+            if(random<parentBias){
+                x=p1[i];
+                y=p2[i];
+            }else{
+              y=p1[i];
+              x=p2[i];
+            }
+            digits1[i] = x;
+            digits2[i] = y;
+        }
+        RobotBrain out1 = new RobotBrain(digits1);
+        RobotBrain out2 = new RobotBrain(digits2);
+        return new RobotBrain[]{out1,out2};
+    }
     public void mutate(){
         Random random = new Random();
         double rand;

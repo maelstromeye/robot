@@ -122,14 +122,21 @@ public class Tracer extends Thread
             setBestRobot();
             calculateFitenssSum();
             ArrayList<Robot> newRobots = new ArrayList<>(size);
-            Robot tempRobot;
-            tempRobot = population.get(bestRobot).giveBaby();
-            newRobots.add(0,tempRobot);
-            tempRobot.isBest(); //najlepszy na inny kolor or sth
-            for(int i=0;i<size;i++){
-                tempRobot = selectParent();
-                tempRobot = tempRobot.giveBaby();
-                newRobots.add(i,tempRobot);
+            Robot parent1,parent2,child;
+            RobotBrain[] brains = new RobotBrain[2];
+//            tempRobot = population.get(bestRobot).giveBaby();
+//            newRobots.add(0,tempRobot);
+//            tempRobot.isBest(); //najlepszy na inny kolor or sth
+            for(int i=0;i<size/2;i++){
+                parent1 = selectParent();
+                parent2 = selectParent();
+                brains = RobotBrain.crossover(parent1.getBrain(),parent2.getBrain());
+                newRobots.add(new Robot(brains[0]));
+                newRobots.add(new Robot(brains[1]));
+
+//                tempRobot = selectParent();
+//                tempRobot = tempRobot.giveBaby();
+//                newRobots.add(i,tempRobot);
             }
             generation++;
             population = newRobots;

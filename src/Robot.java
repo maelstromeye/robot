@@ -17,6 +17,10 @@ public class Robot {
 
     private boolean  best = false;
 
+
+    public RobotBrain getBrain(){
+        return myBrain;
+    }
     public double getAngle() {
         return angle;
     }
