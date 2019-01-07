@@ -13,6 +13,8 @@ public class Robot {
     private Point lastgood = new Point(Tracer.xstart, Tracer.ystart);
     private boolean isDead = false;
 
+    private double max_U;
+
     private boolean  best = false;
 
     public double getAngle() {
@@ -140,7 +142,7 @@ public class Robot {
         steering = myBrain.getKp()*error + myBrain.getKi()*integral + myBrain.getKd()*derivative;
 
 
-        if(Math.abs(steering)>Tracer.base*4){
+        if(Math.abs(steering)>Tracer.base*3){
             if (steering>0){
                 steering = Tracer.base*4;
             }else{

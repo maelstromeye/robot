@@ -10,7 +10,7 @@ public class Tracer extends Thread
     private View view;
     public static BufferedImage track;
 
-    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart = 750, ystart = 580, detrad = 8, tracerad = 2, base = 5, radius = 4;
+    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart = 300, ystart = 1000, detrad = 8, tracerad = 2, base = 5, radius = 4;
 
     public static final double dt = 0.022, p = 1, i = 0, d = 0;
 
@@ -31,7 +31,7 @@ public class Tracer extends Thread
         Tracer tracer;
         BufferedImage image;
         try {
-            image = ImageIO.read(new File("resources/track.png"));
+            image = ImageIO.read(new File("resources/track1.png"));
         } catch (IOException e) {
             e.printStackTrace();
             return;
