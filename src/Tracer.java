@@ -10,9 +10,9 @@ public class Tracer extends Thread
     private View view;
     public static BufferedImage track;
 
-    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart =1150, ystart = 600, detrad = 8, tracerad = 2, base = 5, radius = 4;
+    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart =1150, ystart = 600, detrad = 8, tracerad = 2, radius = 30;
 
-    public static final double dt = 0.022, p = 1, i = 0, d = 0;
+    public static final double dt = 0.022, p = 100, i = 0, d = 0 , base = 5.0/6.0;
 
     Population population;
 
@@ -57,7 +57,7 @@ public class Tracer extends Thread
                 view.repaint();
             }
             try{
-                Thread.sleep(15);
+                Thread.sleep(10);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
@@ -126,27 +126,13 @@ public class Tracer extends Thread
             tempRobot = population.get(bestRobot).giveBaby();
             newRobots.add(0,tempRobot);
             tempRobot.isBest(); //najlepszy na inny kolor or sth
-            Robot parent1,parent2,child;
             for(int i=0;i<size;i++){
-                parent1 = selectParent();
-                parent2 = selectParent();
-                child = crossover(parent1,parent2);
-
-
-
-//                tempRobot = selectParent();
-//                tempRobot = tempRobot.giveBaby();
-//                newRobots.add(i,tempRobot);
+                tempRobot = selectParent();
+                tempRobot = tempRobot.giveBaby();
+                newRobots.add(i,tempRobot);
             }
             generation++;
             population = newRobots;
-        }
-        private Robot crossover(Robot parent1, Robot parent2){
-            Robot child;
-
-
-
-            return child;
         }
         public void mutateBabies(){
             for(Robot r : population){
@@ -182,7 +168,7 @@ public class Tracer extends Thread
                 robot.getRightDetector().setcrd(robot.getTrace().getx() + Math.cos(angle + robot.getSkew()) * robot.getBias(), robot.getTrace().gety() + Math.sin(angle + robot.getSkew()) * robot.getBias());
                 robot.getLeftEngine().setcrd(robot.getTrace().getx() + Math.cos(angle - 1.5708) * width / 2, robot.getTrace().gety() + Math.sin(angle - 1.5708) * width / 2);
                 robot.getRightEngine().setcrd(robot.getTrace().getx() + Math.cos(angle + 1.5708) * width / 2, robot.getTrace().gety() + Math.sin(angle + 1.5708) * width / 2);
-                robot.addTime(dt);
+
                 view.load(new Cell(robot.getTrace().getcrd(), robot.getLeftEngine().getcrd(), robot.getRightEngine().getcrd(), robot.getLeftDetector().getcrd(), robot.getRightDetector().getcrd()), i);
 
 
