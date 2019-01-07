@@ -12,7 +12,7 @@ public class Tracer extends Thread
 
     public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart =1150, ystart = 600, detrad = 8, tracerad = 2, radius = 30;
 
-    public static final double dt = 0.022, p = 100, i = 0, d = 0 , base = 5.0/6.0;
+    public static final double dt = 0.022, p = 100, i = 0, d = 0 , base = 1;
 
     Population population;
 
@@ -45,19 +45,21 @@ public class Tracer extends Thread
     {
         running = true;
         population = new Population(100);
+        double time = System.currentTimeMillis();
         while(running){
-            if(population.isFinished()){
-                System.out.println("genetic");
+
+            if(population.isFinished() || (System.currentTimeMillis()-time)>5000){
                 //algorytm genetyczny
                 population.calculateFitness();
                 population.naturalSelection();
                 population.mutateBabies();
+                time = System.currentTimeMillis();
             }else{
                 population.move();
                 view.repaint();
             }
             try{
-                Thread.sleep(10);
+                Thread.sleep(0);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
@@ -106,7 +108,6 @@ public class Tracer extends Thread
             double random = Math.random() * allFitness;
             double runningSum =0;
             Robot robot;
-            System.out.println(population.size());
             for(int i=0;i<size;i++){
                 runningSum += population.get(i).getFitness();
                 if(runningSum > random){
@@ -164,10 +165,10 @@ public class Tracer extends Thread
             for(int i=0;i<size;i++){
 
                 robot = population.get(i);
+                robot.steer();
                 if(robot.isFinished()){
                     continue;
                 }
-                robot.steer();
                 robot.setAngle(robot.getAngle() + ((double) robot.getLeftEngine().getangvel() - (double) robot.getRightEngine().getangvel()) * radius / width * dt);
                 angle = robot.getAngle();
                 robot.getTrace().setcrd(robot.getTrace().getx() + Math.cos(angle) * (robot.getLeftEngine().getangvel() + robot.getRightEngine().getangvel()) * dt * 3.14 * radius, robot.getTrace().gety() + Math.sin(angle) * (robot.getLeftEngine().getangvel() + robot.getRightEngine().getangvel()) * dt * 3.14 * radius);

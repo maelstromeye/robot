@@ -9,7 +9,7 @@ public class Robot {
 
     private double integral,derivative,lastError;
 
-    private double accumulatedTrace = 0, maxTrace=0;
+    private long accumulatedTrace = 0, maxTrace=0;
     private Point lastgood = new Point(Tracer.xstart, Tracer.ystart);
     private boolean isDead = false;
 
@@ -36,7 +36,7 @@ public class Robot {
     }
 
 
-    private double fitness = 0;
+    private long fitness = 0;
 
     public Detector getLeftDetector() {
         return leftDetector;
@@ -87,7 +87,8 @@ public class Robot {
         return trace;
     }
     public void calculateFitness(){
-        fitness =  maxTrace/accumulatedTrace;
+        fitness =  accumulatedTrace;
+        System.out.println(fitness);
     }
     public void isBest(){
         best = true;
@@ -144,6 +145,7 @@ public class Robot {
         integral+=error*Tracer.dt;
         derivative=(error-lastError)/Tracer.dt;
         steering = myBrain.getKp()*error + myBrain.getKi()*integral + myBrain.getKd()*derivative;
+        if(isFinished()||isDead) steering=0;
 
 
         if(Math.abs(steering)>Tracer.base*4){
@@ -159,7 +161,7 @@ public class Robot {
         leftEngine.setangvel((Tracer.base-steering));
         rightEngine.setangvel((Tracer.base+steering));
 
-        accumulatedTrace+=(100-leftDetector.track()+rightDetector.track())*(100-leftDetector.track()+rightDetector.track());
+        if(error==0) accumulatedTrace++;
         maxTrace+=0;
         if(trace.detect()<=90.0) {
             lastgood = new Point(trace.getcrd());
@@ -240,7 +242,7 @@ class Detector
             }
         }
 
-        return 100-(r/count+g/count+b/count)/765*100+(((Math.random()*10)<=1)?(Math.random()*10):0);
+        return (100-(r/count+g/count+b/count)/765*100);
     }
     public double getx(){return crd.getX();}
     public double gety(){return crd.getY();}
