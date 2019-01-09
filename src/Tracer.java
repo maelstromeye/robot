@@ -10,8 +10,8 @@ public class Tracer extends Thread
     private View view;
     public static BufferedImage track;
 
-    public static final int width = 100, ocular = 40, telescope = 40, length = 0, xstart =1150, ystart = 600, detrad = 8, tracerad = 2, radius = 30;
-
+    public static final int width = 100, ocular = 40, telescope = 40, length = 0, detrad = 8, tracerad = 2, radius = 30;
+    public static int xstart=130, ystart=300;
     public static final double dt = 0.022, p = 100, i = 0, d = 0 , base = 1;
 
     Population population;

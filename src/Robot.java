@@ -88,7 +88,14 @@ public class Robot {
     }
     public void calculateFitness(){
         fitness =  accumulatedTrace;
-        System.out.println(fitness);
+        if(fitness>2000)
+        {
+            System.out.println("Fit:"+fitness);
+            System.out.println("Kp: "+myBrain.getKp());
+            System.out.println("Ki: "+myBrain.getKi());
+            System.out.println("Kd:"+myBrain.getKd());
+
+        }
     }
     public void isBest(){
         best = true;
@@ -107,7 +114,11 @@ public class Robot {
             return true;
         }
         int max=100;
-        if(Math.hypot(trace.getcrd().getY()-lastgood.getY(), trace.getx()-lastgood.getX())>=max) return true;
+        if(Math.hypot(trace.getcrd().getY()-lastgood.getY(), trace.getx()-lastgood.getX())>=max)
+        {
+            isDead=true;
+            return true;
+        }
         return false;
     }
 
@@ -161,7 +172,7 @@ public class Robot {
         leftEngine.setangvel((Tracer.base-steering));
         rightEngine.setangvel((Tracer.base+steering));
 
-        if(error==0) accumulatedTrace++;
+        if(error==0&&!(isDead||isFinished())) accumulatedTrace++;
         maxTrace+=0;
         if(trace.detect()<=90.0) {
             lastgood = new Point(trace.getcrd());
@@ -220,7 +231,7 @@ class Detector
             }
         }
 
-        return (r/count+g/count+b/count)/765*100+(((Math.random()*10)<=1)?(Math.random()*10):0);
+        return (r/count+g/count+b/count)/765*100;//+(((Math.random()*10)<=1)?(Math.random()*10):0);
     }
     public double track()
     {
