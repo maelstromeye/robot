@@ -48,7 +48,7 @@ public class Tracer extends Thread
         double time = System.currentTimeMillis();
         while(running){
 
-            if(population.isFinished() || (System.currentTimeMillis()-time)>5000){
+            if(population.isFinished() || (System.currentTimeMillis()-time)>5000000){
                 System.out.println("hi in sel");
                 //algorytm genetyczny
                 population.calculateFitness();
@@ -122,7 +122,7 @@ public class Tracer extends Thread
         }
         public void naturalSelection(){
             System.out.println("NATURAL SELECTION \n\n\n");
-//            setBestRobot();
+            setBestRobot();
             calculateFitenssSum();
             ArrayList<Robot> newRobots = new ArrayList<>(size);
             Robot parent1,parent2;
@@ -136,8 +136,7 @@ public class Tracer extends Thread
 //                newRobots.add(new Robot(brains[0]));
 //                newRobots.add(new Robot(brains[1]));
                 newRobots.add(new Robot(RobotBrain.crossover(parent1.getBrain(), parent2.getBrain())));
-                System.out.println("In natural selection: ");
-                newRobots.get(i).getBrain().print();
+
 //                tempRobot = selectParent();
 //                tempRobot = tempRobot.giveBaby();
 //                newRobots.add(i,tempRobot);
@@ -149,7 +148,6 @@ public class Tracer extends Thread
             System.out.println("Mutation: \n\n\n");
             for(Robot r : population){
                 r.getBrain().mutate();
-                r.getBrain().print();
             }
         }
         private void setBestRobot(){
@@ -161,6 +159,7 @@ public class Tracer extends Thread
                     maxIndex = i;
                 }
                 bestRobot = maxIndex;
+                population.get(bestRobot).getBrain().print();
             }
 
         }

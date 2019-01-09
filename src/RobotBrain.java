@@ -90,10 +90,6 @@ public class RobotBrain {
         return out2;
     }
     public void mutate(){
-        for(int i: digits){
-            System.out.print(i);
-        }
-        System.out.println();
         Random random = new Random();
         double rand;
         if(Math.random()<mutationRate){
@@ -143,10 +139,6 @@ public class RobotBrain {
             }
 
         }
-        for(int i: digits){
-            System.out.print(i);
-        }
-        System.out.println();
         setPid(digits);
     }
 }
