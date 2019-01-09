@@ -29,7 +29,12 @@ public class RobotBrain {
         Kp = digits[0]*10 + digits[1] + digits[2]/10.0 + digits[3]/100.0;
         Ki = digits[4]*10 + digits[5] + digits[6]/10.0 + digits[7]/100.0;
         Kd = digits[8]*10 + digits[9] + digits[10]/10.0 + digits[11]/100.0;
+        //print();
     }
+    public void print(){
+        System.out.println("Kp: " + Kp + ", Kd: " + Kd + ", Ki: " + Ki);
+    }
+
 
 
 
@@ -44,14 +49,19 @@ public class RobotBrain {
     }
 
     private RobotBrain(int[] digits){
+        this.digits = digits;
         setPid(digits);
+        //print();
     }
 
 
-    public static RobotBrain[] crossover(RobotBrain b1, RobotBrain b2){
-        double a =0.5;
+    public static RobotBrain crossover(RobotBrain b1, RobotBrain b2){
+//        System.out.print("gotten brains: ");
+//        b1.print();
+//        b2.print();
+//        System.out.println();
         double random;
-        double parentBias = Math.random();
+        double parentBias = 0.5;//Math.random();
         int[] digits1 = new int[12];
         int[] digits2 = new int[12];
         int[] p1 = b1.getDigits();
@@ -68,14 +78,22 @@ public class RobotBrain {
               y=p1[i];
               x=p2[i];
             }
+
             digits1[i] = x;
             digits2[i] = y;
         }
         RobotBrain out1 = new RobotBrain(digits1);
         RobotBrain out2 = new RobotBrain(digits2);
-        return new RobotBrain[]{out1,out2};
+        if(Math.random()<0.5) {
+            return out1;
+        }
+        return out2;
     }
     public void mutate(){
+        for(int i: digits){
+            System.out.print(i);
+        }
+        System.out.println();
         Random random = new Random();
         double rand;
         if(Math.random()<mutationRate){
@@ -125,6 +143,10 @@ public class RobotBrain {
             }
 
         }
-
+        for(int i: digits){
+            System.out.print(i);
+        }
+        System.out.println();
+        setPid(digits);
     }
 }

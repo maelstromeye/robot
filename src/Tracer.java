@@ -49,6 +49,7 @@ public class Tracer extends Thread
         while(running){
 
             if(population.isFinished() || (System.currentTimeMillis()-time)>5000){
+                System.out.println("hi in sel");
                 //algorytm genetyczny
                 population.calculateFitness();
                 population.naturalSelection();
@@ -114,27 +115,29 @@ public class Tracer extends Thread
                     return population.get(i);
                 }
             }
+            System.out.println("hi there");
             robot = new Robot(new RobotBrain());
             return robot;
 
         }
         public void naturalSelection(){
-
-            setBestRobot();
+            System.out.println("NATURAL SELECTION \n\n\n");
+//            setBestRobot();
             calculateFitenssSum();
             ArrayList<Robot> newRobots = new ArrayList<>(size);
-            Robot parent1,parent2,child;
-            RobotBrain[] brains = new RobotBrain[2];
+            Robot parent1,parent2;
 //            tempRobot = population.get(bestRobot).giveBaby();
 //            newRobots.add(0,tempRobot);
 //            tempRobot.isBest(); //najlepszy na inny kolor or sth
-            for(int i=0;i<size/2;i++){
+            for(int i=0;i<size;i++){
                 parent1 = selectParent();
                 parent2 = selectParent();
-                brains = RobotBrain.crossover(parent1.getBrain(),parent2.getBrain());
-                newRobots.add(new Robot(brains[0]));
-                newRobots.add(new Robot(brains[1]));
-
+//                brains = RobotBrain.crossover(parent1.getBrain(),parent2.getBrain());
+//                newRobots.add(new Robot(brains[0]));
+//                newRobots.add(new Robot(brains[1]));
+                newRobots.add(new Robot(RobotBrain.crossover(parent1.getBrain(), parent2.getBrain())));
+                System.out.println("In natural selection: ");
+                newRobots.get(i).getBrain().print();
 //                tempRobot = selectParent();
 //                tempRobot = tempRobot.giveBaby();
 //                newRobots.add(i,tempRobot);
@@ -143,8 +146,10 @@ public class Tracer extends Thread
             population = newRobots;
         }
         public void mutateBabies(){
+            System.out.println("Mutation: \n\n\n");
             for(Robot r : population){
-                r.myBrain.mutate();
+                r.getBrain().mutate();
+                r.getBrain().print();
             }
         }
         private void setBestRobot(){
